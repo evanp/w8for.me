@@ -3,13 +3,13 @@
 
 
 /* TEAM */
-  <your title>: <your name>
-  Site:
-  Twitter:
-  Location:
+  Developer: Evan Prodromou
+  Site: w8for.me
+  Twitter: evanpro
+  Location: Montreal, Quebec
 
 /* THANKS */
-  Names (& URL):
+  Names (& URL): 
 
 /* SITE */
   Standards: HTML5, CSS3
