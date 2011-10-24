@@ -1,4 +1,4 @@
-/*
+
  * HTML5 ✰ Boilerplate
  *
  * What follows is the result of much research on cross-browser styling.
@@ -284,4 +284,16 @@ td { vertical-align: top; }
   @page { margin: 0.5cm; }
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3 { page-break-after: avoid; }
+}
+
+.num-shim {
+    font-size: 0.45em;
+    right: 0.4em;
+    top: 0.45em;
+
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+     user-select: none;
 }
