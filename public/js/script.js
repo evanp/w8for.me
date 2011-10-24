@@ -2,9 +2,41 @@
 
  */
 
-// Shim for 'number' types
+function setLastEntryDate(ts)
+{
+    console.log("Timestamp = " + ts);
+    var d = new Date(ts);
+    var s = d.toLocaleString();
+    $('#last-entry-date').html("Last entry: " + s);
+}
+
+function setWeight(weight)
+{
+    $('#hundreds').value = Math.floor(weight/100);
+    $('#tens').value = Math.floor((weight%100)/10);
+    $('#ones').value = Math.floor(weight%10);
+}
+
+function getCount()
+{
+    var rawCnt = localStorage["entry.count"];
+    if (rawCnt == null) {
+	cnt = 0;
+	localStorage["entry.count"] = cnt;
+    } else {
+	cnt = parseInt(rawCnt);
+    }
+    return cnt;
+}
+
+function setCount(cnt)
+{
+    localStorage["entry.count"] = cnt;
+}
 
 $(function() {
+
+    // Shim for 'number' types
 
     if (!Modernizr.inputtypes.number) {
 
@@ -61,5 +93,46 @@ $(function() {
 		el.val(+el.val() +num).trigger('change');
 	    }
 	});
+    }
+
+    $('form#weight-entry').submit(function(event) {
+
+	var hundreds = parseInt($('form#weight-entry').hundreds);
+	var tens = parseInt($('form#weight-entry').tens);
+	var ones = parseInt($('form#weight-entry').ones);
+
+	var weight = (hundreds*100) + (tens*10) + ones;
+
+	cnt = getCount();
+
+	// zero-indexed
+
+	var item = cnt;
+
+	var ts = new Date().getTime();
+
+	localStorage["entry."+item+".weight"] = weight;
+	localStorage["entry."+item+".timestamp"] = ts;
+
+	setCount(cnt+1);
+
+	// Don't do default processing
+
+	setLastEntryDate(ts);
+
+	return false;
+    });
+
+    var cnt = getCount();
+
+    if (cnt > 0) {
+	console.log("Storage count = " + cnt);
+	var item = cnt-1;
+	var weight = parseInt(localStorage["entry."+item+".weight"]);
+	var ts = parseInt(localStorage["entry."+item+".timestamp"]);
+	console.log("Stored weight = " + weight);
+	console.log("Stored ts = " + ts);
+	setWeight(weight);
+	setLastEntryDate(ts);
     }
 });
