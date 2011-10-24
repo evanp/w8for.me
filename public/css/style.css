@@ -297,3 +297,11 @@ td { vertical-align: top; }
     -o-user-select: none;
      user-select: none;
 }
+
+.entry {
+    font-size: 60px;
+}
+
+body {
+    text-align: center;
+}
