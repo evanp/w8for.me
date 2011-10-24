@@ -4,17 +4,26 @@
 
 function setLastEntryDate(ts)
 {
-    console.log("Timestamp = " + ts);
     var d = new Date(ts);
-    var s = d.toLocaleString();
-    $('#last-entry-date').html("Last entry: " + s);
+    $('#last-entry-date').html("Last saved: " + niceDate(d));
+}
+
+function niceDate(d)
+{
+    now = new Date();
+    
+    if ((now.getYear() != d.getYear()) || (now.getMonth() != d.getMonth()) || (now.getDate() != d.getDate())) {
+	return d.toLocaleDateString();
+    } else {
+	return d.toLocaleTimeString();
+    }
 }
 
 function setWeight(weight)
 {
-    $('#hundreds').value = Math.floor(weight/100);
-    $('#tens').value = Math.floor((weight%100)/10);
-    $('#ones').value = Math.floor(weight%10);
+    $('#hundreds').val(Math.floor(weight/100));
+    $('#tens').val(Math.floor((weight%100)/10));
+    $('#ones').val(Math.floor(weight%10));
 }
 
 function getCount()
@@ -97,9 +106,9 @@ $(function() {
 
     $('form#weight-entry').submit(function(event) {
 
-	var hundreds = parseInt($('form#weight-entry').hundreds);
-	var tens = parseInt($('form#weight-entry').tens);
-	var ones = parseInt($('form#weight-entry').ones);
+	var hundreds = parseInt($('#hundreds').val());
+	var tens = parseInt($('#tens').val());
+	var ones = parseInt($('#ones').val());
 
 	var weight = (hundreds*100) + (tens*10) + ones;
 
@@ -126,12 +135,9 @@ $(function() {
     var cnt = getCount();
 
     if (cnt > 0) {
-	console.log("Storage count = " + cnt);
 	var item = cnt-1;
 	var weight = parseInt(localStorage["entry."+item+".weight"]);
 	var ts = parseInt(localStorage["entry."+item+".timestamp"]);
-	console.log("Stored weight = " + weight);
-	console.log("Stored ts = " + ts);
 	setWeight(weight);
 	setLastEntryDate(ts);
     }
