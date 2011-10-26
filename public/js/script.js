@@ -167,7 +167,7 @@ $(function() {
 	var entry = { weight: weight,
 		      ts: new Date().getTime() };
 
-	pushEntry(cnt, entry);
+	pushEntry(entry);
 
 	showLastEntryDate(entry.ts);
 
