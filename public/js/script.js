@@ -2,7 +2,7 @@
 
  */
 
-function setLastEntryDate(ts)
+function showLastEntryDate(ts)
 {
     var d = new Date(ts);
     $('#last-entry-date').html("Last saved: " + niceDate(d));
@@ -19,11 +19,61 @@ function niceDate(d)
     }
 }
 
-function setWeight(weight)
+function showWeight(weight)
 {
     $('#hundreds').val(Math.floor(weight/100));
     $('#tens').val(Math.floor((weight%100)/10));
     $('#ones').val(Math.floor(weight%10));
+}
+
+function pushEntry(entry) 
+{
+    cnt = getCount();
+
+    var i = cnt;
+    var props = [];
+
+    for (var prop in entry)
+    {
+	localStorage["entry."+i+"."+prop] = entry[prop];
+	props.push(prop);
+    }
+    
+    localStorage["entry."+i+"._properties"] = props.join(",");
+
+    setCount(cnt+1);
+}
+
+function getEntry(i)
+{
+    var propString = localStorage["entry."+i+"._properties"];
+
+    if (properties == null) {
+	return null;
+    }
+
+    var properties = propString.split(",");
+
+    var entry = {};
+
+    for (var i in properties)
+    {
+	var prop = properties[i];
+	entry[prop] = localStorage["entry."+i+"."+prop];
+    }
+
+    return entry;
+}
+
+function getLastEntry()
+{
+    var cnt = getCount();
+
+    if (cnt == 0) {
+	return null;
+    } else {
+	return getEntry(cnt);
+    }
 }
 
 function getCount()
@@ -112,33 +162,24 @@ $(function() {
 
 	var weight = (hundreds*100) + (tens*10) + ones;
 
-	cnt = getCount();
-
 	// zero-indexed
 
-	var item = cnt;
+	var entry = { weight: weight,
+		      ts: new Date().getTime() };
 
-	var ts = new Date().getTime();
+	pushEntry(cnt, entry);
 
-	localStorage["entry."+item+".weight"] = weight;
-	localStorage["entry."+item+".timestamp"] = ts;
-
-	setCount(cnt+1);
+	showLastEntryDate(entry.ts);
 
 	// Don't do default processing
-
-	setLastEntryDate(ts);
 
 	return false;
     });
 
-    var cnt = getCount();
+    var entry = getLastEntry();
 
-    if (cnt > 0) {
-	var item = cnt-1;
-	var weight = parseInt(localStorage["entry."+item+".weight"]);
-	var ts = parseInt(localStorage["entry."+item+".timestamp"]);
-	setWeight(weight);
-	setLastEntryDate(ts);
+    if (entry != null) {
+	showWeight(entry.weight);
+	showLastEntryDate(entry.ts);
     }
 });
