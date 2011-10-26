@@ -97,6 +97,8 @@ $(function() {
 	$.getScript('mylibs/json2.js');
     }
 
+    $.getScript('mylibs/uuid.js');
+
     // Shim for 'number' types
 
     if (!Modernizr.inputtypes.number) {
@@ -167,7 +169,9 @@ $(function() {
 	// zero-indexed
 
 	var entry = { weight: weight,
-		      ts: new Date().getTime() };
+		      ts: new Date().getTime(),
+		      id: uuid()
+		    };
 
 	pushEntry(entry);
 
