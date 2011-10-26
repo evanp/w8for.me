@@ -173,4 +173,6 @@ $(function() {
 	showWeight(entry.weight);
 	showLastEntryDate(entry.ts);
     } 
+
+    $("#main").fadeIn();
 });
