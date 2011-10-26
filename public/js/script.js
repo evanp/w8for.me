@@ -76,6 +76,21 @@ function setCount(cnt)
     localStorage["entry.count"] = cnt;
 }
 
+function switchTo(panel)
+{
+    static var current = null;
+
+    if (current != null) {
+	$("#"+current).fadeOut();
+	$("#menu-"+current).enable();
+    }
+    
+    current = panel;
+
+    $("#"+current).fadeIn();
+    $("#menu-"+current).disable();
+}
+
 $(function() {
 
     // Make sure we have global JSON object
@@ -174,5 +189,5 @@ $(function() {
 	showLastEntryDate(entry.ts);
     } 
 
-    $("#main").fadeIn();
+    switchTo('entry');
 });

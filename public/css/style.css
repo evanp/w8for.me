@@ -286,10 +286,6 @@ td { vertical-align: top; }
   h2, h3 { page-break-after: avoid; }
 }
 
-#main {
-    display: none;
-}
-
 .num-shim {
     font-size: 0.45em;
     right: 0.4em;
@@ -302,10 +298,17 @@ td { vertical-align: top; }
      user-select: none;
 }
 
-.entry {
+#entry {
     font-size: 60px;
+    display: none;
+    text-align: center;
 }
 
-body {
-    text-align: center;
+#history {
+    display: none;
+}
+
+#switcher ul li {
+    display: inline;
+    list-style-type: none;
 }

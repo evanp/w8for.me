@@ -36,22 +36,30 @@
     <h1>w8for.me</h1>
   </header>
   <div id="main" role="main">
-    <div class="entry">
-    <form id="weight-entry">
-      <fieldset>
-      <input type="number" size="1" maxlength="1" min="0" max="9" step="1" name="hundreds" id="hundreds"></input>
-      <input type="number" size="1" maxlength="1" min="0" max="9" step="1" name="tens" id="tens"></input>
-      <input type="number" size="1" maxlength="1" min="0" max="9" step="1" name="ones" id="ones"></input>
-      </fieldset>
-      <input type="submit" value="Save"></input>
-    </form>
-    <p id="last-entry-date"></p>
+    <div id="entry">
+      <form id="weight-entry">
+	<fieldset>
+	  <input type="number" size="1" maxlength="1" min="0" max="9" step="1" name="hundreds" id="hundreds"></input>
+	  <input type="number" size="1" maxlength="1" min="0" max="9" step="1" name="tens" id="tens"></input>
+	  <input type="number" size="1" maxlength="1" min="0" max="9" step="1" name="ones" id="ones"></input>
+	</fieldset>
+	<input type="submit" value="Save"></input>
+      </form>
+      <p id="last-entry-date"></p>
+    </div>
+    <div id="history">
+      <table id="history">
+      </table>
     </div>
   </div>
   <footer>
-
+    <nav id="switcher">
+      <ul>
+	<li><a id="menu-entry" href="javascript:switchTo('entry')">Entry</a></li>
+	<li><a id="menu-history" href="javascript:switchTo('history')">History</a></li>
+      </ul>
+    </nav>
   </footer>
-
 
   <!-- JavaScript at the bottom for fast page loading -->
 
