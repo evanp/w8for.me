@@ -72,7 +72,7 @@ function getLastEntry()
     if (cnt == 0) {
 	return null;
     } else {
-	return getEntry(cnt);
+	return getEntry(cnt - 1);
     }
 }
 
