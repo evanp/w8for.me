@@ -85,7 +85,6 @@ var switchTo = (function() {
 	}
 	_current = panel;
 	$("#"+_current).fadeIn();
-	$("#menu-"+_current).disable();
     };
 })();
 
