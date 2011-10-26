@@ -48,7 +48,7 @@ function getEntry(i)
 {
     var propString = localStorage["entry."+i+"._properties"];
 
-    if (properties == null) {
+    if (propString == null) {
 	return null;
     }
 
