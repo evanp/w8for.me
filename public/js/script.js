@@ -94,10 +94,10 @@ $(function() {
     // Make sure we have global JSON object
 
     if (!window.JSON) {
-	$.getScript('mylibs/json2.js');
+	$.getScript('js/mylibs/json2.js');
     }
 
-    $.getScript('mylibs/uuid.js');
+    $.getScript('js/mylibs/uuid.js');
 
     // Shim for 'number' types
 
