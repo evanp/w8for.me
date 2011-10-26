@@ -60,6 +60,9 @@ function getEntry(i)
     {
 	var prop = properties[i];
 	entry[prop] = localStorage["entry."+i+"."+prop];
+	if (entry[prop].match(/\d+/)) {
+	    entry[prop] = parseInt(entry[prop]);
+	}
     }
 
     return entry;
