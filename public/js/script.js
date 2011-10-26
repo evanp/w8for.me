@@ -76,20 +76,18 @@ function setCount(cnt)
     localStorage["entry.count"] = cnt;
 }
 
-function switchTo(panel)
-{
-    static var current = null;
-
-    if (current != null) {
-	$("#"+current).fadeOut();
-	$("#menu-"+current).enable();
-    }
-    
-    current = panel;
-
-    $("#"+current).fadeIn();
-    $("#menu-"+current).disable();
-}
+var switchTo = (function() {
+    var _current = null;
+    return function(panel) {
+	if (_current != null) {
+	    $("#"+_current).fadeOut();
+	    $("#menu-"+_current).enable();
+	}
+	_current = panel;
+	$("#"+_current).fadeIn();
+	$("#menu-"+_current).disable();
+    };
+})();
 
 $(function() {
 

@@ -301,6 +301,9 @@ td { vertical-align: top; }
 #entry {
     font-size: 60px;
     display: none;
+}
+
+body {
     text-align: center;
 }
 
