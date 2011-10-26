@@ -298,13 +298,18 @@ td { vertical-align: top; }
      user-select: none;
 }
 
-#entry {
+.weight-spinner {
     font-size: 60px;
-    display: none;
+    margin-top: 0.2em; 
+    margin-bottom: 0.2em; 
 }
 
 body {
     text-align: center;
+}
+
+#entry {
+    display: none;
 }
 
 #history {
