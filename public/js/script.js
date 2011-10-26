@@ -81,10 +81,11 @@ var switchTo = (function() {
     return function(panel) {
 	if (_current != null) {
 	    $("#"+_current).fadeOut();
-	    $("#menu-"+_current).enable();
+	    $("#menu-"+_current).removeClass('selected');
 	}
 	_current = panel;
 	$("#"+_current).fadeIn();
+	$("#menu-"+_current).addClass('selected');
     };
 })();
 
