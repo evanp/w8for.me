@@ -31,41 +31,21 @@ function pushEntry(entry)
     cnt = getCount();
 
     var i = cnt;
-    var props = [];
 
-    for (var prop in entry)
-    {
-	localStorage["entry."+i+"."+prop] = entry[prop];
-	props.push(prop);
-    }
-    
-    localStorage["entry."+i+"._properties"] = props.join(",");
+    localStorage["entry."+i] = JSON.stringify(entry);
 
     setCount(cnt+1);
 }
 
 function getEntry(i)
 {
-    var propString = localStorage["entry."+i+"._properties"];
+    var json = localStorage["entry."+i];
 
-    if (propString == null) {
+    if (json == null) {
 	return null;
+    } else {
+	return JSON.parse(json);
     }
-
-    var properties = propString.split(",");
-
-    var entry = {};
-
-    for (var i in properties)
-    {
-	var prop = properties[i];
-	entry[prop] = localStorage["entry."+i+"."+prop];
-	if (entry[prop].match(/\d+/)) {
-	    entry[prop] = parseInt(entry[prop]);
-	}
-    }
-
-    return entry;
 }
 
 function getLastEntry()
@@ -97,6 +77,12 @@ function setCount(cnt)
 }
 
 $(function() {
+
+    // Make sure we have global JSON object
+
+    if (!window.JSON) {
+	$.getScript('mylibs/json2.js');
+    }
 
     // Shim for 'number' types
 
@@ -181,8 +167,10 @@ $(function() {
 
     var entry = getLastEntry();
 
-    if (entry != null) {
+    if (entry == null) {
+	showWeight(150);
+    } else {
 	showWeight(entry.weight);
 	showLastEntryDate(entry.ts);
-    }
+    } 
 });
