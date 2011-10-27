@@ -52,15 +52,16 @@ var entryForm = {
 };
 
 var entryStore = {
+
     pushEntry: function(entry) 
     {
-	cnt = getCount();
+	cnt = this.getCount();
 
 	var i = cnt;
 
 	localStorage["entry."+i] = JSON.stringify(entry);
 
-	setCount(cnt+1);
+	this.setCount(cnt+1);
     },
 
     getEntry: function(i)
@@ -76,12 +77,12 @@ var entryStore = {
 
     getLastEntry: function()
     {
-	var cnt = getCount();
+	var cnt = this.getCount();
 
 	if (cnt == 0) {
 	    return null;
 	} else {
-	    return getEntry(cnt - 1);
+	    return this.getEntry(cnt - 1);
 	}
     },
 
