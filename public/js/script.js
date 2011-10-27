@@ -15,7 +15,7 @@ var UI = {
 		$("#"+newPanel).fadeIn('fast', function() {
 		    $("#menu-"+oldPanel).removeClass('selected');
 		    $("#menu-"+newPanel).addClass('selected');
-		}
+		});
 	    });
 	}
     },
