@@ -9,18 +9,12 @@ var UI = {
 	    $("#"+this._current).fadeOut();
 	    $("#menu-"+this._current).removeClass('selected');
 	}
+	var old = this._current;
 	this._current = panel;
+	$("#"+this._current).trigger('switchfrom', { newPanel: panel });
+	$("#"+this._current).trigger('switchto', { oldPanel: old });
 	$("#"+this._current).fadeIn();
 	$("#menu-"+this._current).addClass('selected');
-    }
-};
-
-var entryForm = {
-
-    showLastEntryDate: function(ts)
-    {
-	var d = new Date(ts);
-	$('#last-entry-date').html("Last saved: " + this.niceDate(d));
     },
 
     niceDate: function(d)
@@ -32,6 +26,15 @@ var entryForm = {
 	} else {
 	    return d.toLocaleTimeString();
 	}
+    }
+};
+
+var entryForm = {
+
+    showLastEntryDate: function(ts)
+    {
+	var d = new Date(ts);
+	$('#last-entry-date').html("Last saved: " + UI.niceDate(d));
     },
 
     showWeight: function(weight)
@@ -96,6 +99,56 @@ var entryStore = {
 	} else {
 	    return this.getEntry(id);
 	}
+    },
+
+    reverseChron: function() {
+
+	var index = this.get("entry.index.by-ts", {});
+	var times = new Array();
+	var ids = new Array();
+
+	for (var ts in index) {
+	    times.push(parseInt(ts));
+	}
+
+	times.sort(function(a, b) { return b - a; });
+
+	for (var i = 0; i < times.length; i++) {
+	    var ts = times[i];
+	    ids.push(index[ts]);
+	}
+
+	return ids;
+    }
+};
+
+var historyPanel = {
+    _init: false,
+    initialize: function() {
+	if (this._init) {
+	    return;
+	}
+	var ids = entryStore.reverseChron();
+	for (var i = 0; i < ids.length; i++) {
+	    var id = ids[i];
+	    var entry = entryStore.getEntry(id);
+	    if (entry != null) {
+		this.appendEntry(entry);
+	    }
+	}
+	this._init = true;
+    },
+
+    appendEntry: function(entry) {
+	$('#history-items tbody').append(this.rowForEntry(entry));
+    },
+
+    rowForEntry: function(entry) {
+	return $('<tr id="entry-'+entry.id+'"><td>'+UI.niceDate(entry.ts)+'</td><td>'+entry.weight+'</td></tr>');
+    },
+
+    prependEntry: function(entry) {
+	$('#history-items tbody').prepend(this.rowForEntry(entry));
     }
 };
 
@@ -178,6 +231,7 @@ $(function() {
 
 	entryStore.pushEntry(entry);
 
+	historyPanel.prependEntry(entry);
 	entryForm.showLastEntryDate(entry.ts);
 
 	// Don't do default processing
@@ -193,6 +247,10 @@ $(function() {
 	entryForm.showWeight(entry.weight);
 	entryForm.showLastEntryDate(entry.ts);
     } 
+
+    $('#history').bind('switchto', function (event, data) {
+	historyPanel.initialize();
+    });
 
     UI.switchTo('entry');
 });

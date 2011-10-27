@@ -326,3 +326,7 @@ body {
     outline: none;
     color: "dark gray";
 }
+
+#history-items {
+    border-width: 1px;
+}
