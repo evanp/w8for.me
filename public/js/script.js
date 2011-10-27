@@ -144,7 +144,7 @@ var historyPanel = {
     },
 
     rowForEntry: function(entry) {
-	return $('<tr id="entry-'+entry.id+'"><td>'+UI.niceDate(entry.ts)+'</td><td>'+entry.weight+'</td></tr>');
+	return $('<tr id="entry-'+entry.id+'"><td>'+UI.niceDate(new Date(entry.ts))+'</td><td>'+entry.weight+'</td></tr>');
     },
 
     prependEntry: function(entry) {
