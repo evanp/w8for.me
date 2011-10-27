@@ -2,92 +2,106 @@
 
  */
 
-function showLastEntryDate(ts)
-{
-    var d = new Date(ts);
-    $('#last-entry-date').html("Last saved: " + niceDate(d));
-}
-
-function niceDate(d)
-{
-    now = new Date();
-    
-    if ((now.getYear() != d.getYear()) || (now.getMonth() != d.getMonth()) || (now.getDate() != d.getDate())) {
-	return d.toLocaleDateString();
-    } else {
-	return d.toLocaleTimeString();
-    }
-}
-
-function showWeight(weight)
-{
-    $('#hundreds').val(Math.floor(weight/100));
-    $('#tens').val(Math.floor((weight%100)/10));
-    $('#ones').val(Math.floor(weight%10));
-}
-
-function pushEntry(entry) 
-{
-    cnt = getCount();
-
-    var i = cnt;
-
-    localStorage["entry."+i] = JSON.stringify(entry);
-
-    setCount(cnt+1);
-}
-
-function getEntry(i)
-{
-    var json = localStorage["entry."+i];
-
-    if (json == null) {
-	return null;
-    } else {
-	return JSON.parse(json);
-    }
-}
-
-function getLastEntry()
-{
-    var cnt = getCount();
-
-    if (cnt == 0) {
-	return null;
-    } else {
-	return getEntry(cnt - 1);
-    }
-}
-
-function getCount()
-{
-    var rawCnt = localStorage["entry.count"];
-    if (rawCnt == null) {
-	cnt = 0;
-	localStorage["entry.count"] = cnt;
-    } else {
-	cnt = parseInt(rawCnt);
-    }
-    return cnt;
-}
-
-function setCount(cnt)
-{
-    localStorage["entry.count"] = cnt;
-}
-
-var switchTo = (function() {
-    var _current = null;
-    return function(panel) {
-	if (_current != null) {
-	    $("#"+_current).fadeOut();
-	    $("#menu-"+_current).removeClass('selected');
+var UI = {
+    _current: null,
+    switchTo: function(panel) {
+	if (this._current != null) {
+	    $("#"+this._current).fadeOut();
+	    $("#menu-"+this._current).removeClass('selected');
 	}
-	_current = panel;
-	$("#"+_current).fadeIn();
-	$("#menu-"+_current).addClass('selected');
-    };
-})();
+	this._current = panel;
+	$("#"+this._current).fadeIn();
+	$("#menu-"+this._current).addClass('selected');
+    }
+};
+
+var entryForm = {
+
+    showLastEntryDate: function(ts)
+    {
+	var d = new Date(ts);
+	$('#last-entry-date').html("Last saved: " + niceDate(d));
+    },
+
+    niceDate: function(d)
+    {
+	now = new Date();
+	
+	if ((now.getYear() != d.getYear()) || (now.getMonth() != d.getMonth()) || (now.getDate() != d.getDate())) {
+	    return d.toLocaleDateString();
+	} else {
+	    return d.toLocaleTimeString();
+	}
+    },
+
+    showWeight: function(weight)
+    {
+	$('#hundreds').val(Math.floor(weight/100));
+	$('#tens').val(Math.floor((weight%100)/10));
+	$('#ones').val(Math.floor(weight%10));
+    },
+
+    getWeight: function()
+    {
+	var hundreds = parseInt($('#hundreds').val());
+	var tens = parseInt($('#tens').val());
+	var ones = parseInt($('#ones').val());
+
+	return (hundreds*100) + (tens*10) + ones;
+    }
+};
+
+var entryStore = {
+    pushEntry: function(entry) 
+    {
+	cnt = getCount();
+
+	var i = cnt;
+
+	localStorage["entry."+i] = JSON.stringify(entry);
+
+	setCount(cnt+1);
+    },
+
+    getEntry: function(i)
+    {
+	var json = localStorage["entry."+i];
+
+	if (json == null) {
+	    return null;
+	} else {
+	    return JSON.parse(json);
+	}
+    },
+
+    getLastEntry: function()
+    {
+	var cnt = getCount();
+
+	if (cnt == 0) {
+	    return null;
+	} else {
+	    return getEntry(cnt - 1);
+	}
+    },
+
+    getCount: function()
+    {
+	var rawCnt = localStorage["entry.count"];
+	if (rawCnt == null) {
+	    cnt = 0;
+	    localStorage["entry.count"] = cnt;
+	} else {
+	    cnt = parseInt(rawCnt);
+	}
+	return cnt;
+    },
+
+    setCount: function(cnt)
+    {
+	localStorage["entry.count"] = cnt;
+    },
+};
 
 $(function() {
 
@@ -142,8 +156,7 @@ $(function() {
 		}
 	    });
 
-	    fr
-		.insertAfter(el)
+	    fr.insertAfter(el)
 		.find('span')
 		.bind('click', function() {
 		    $(this).hasClass('up') ? valUpdate(step) : valUpdate(-step);
@@ -160,36 +173,30 @@ $(function() {
 
     $('form#weight-entry').submit(function(event) {
 
-	var hundreds = parseInt($('#hundreds').val());
-	var tens = parseInt($('#tens').val());
-	var ones = parseInt($('#ones').val());
-
-	var weight = (hundreds*100) + (tens*10) + ones;
-
+	var weight = entryForm.getWeight();
 	// zero-indexed
 
 	var entry = { weight: weight,
 		      ts: new Date().getTime(),
-		      id: uuid()
-		    };
+		      id: uuid() };
 
-	pushEntry(entry);
+	entryStore.pushEntry(entry);
 
-	showLastEntryDate(entry.ts);
+	entryForm.showLastEntryDate(entry.ts);
 
 	// Don't do default processing
 
 	return false;
     });
 
-    var entry = getLastEntry();
+    var entry = entryStore.getLastEntry();
 
     if (entry == null) {
-	showWeight(150);
+	entryForm.showWeight(150);
     } else {
-	showWeight(entry.weight);
-	showLastEntryDate(entry.ts);
+	entryForm.showWeight(entry.weight);
+	entryForm.showLastEntryDate(entry.ts);
     } 
 
-    switchTo('entry');
+    UI.switchTo('entry');
 });
