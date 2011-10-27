@@ -20,7 +20,7 @@ var entryForm = {
     showLastEntryDate: function(ts)
     {
 	var d = new Date(ts);
-	$('#last-entry-date').html("Last saved: " + niceDate(d));
+	$('#last-entry-date').html("Last saved: " + this.niceDate(d));
     },
 
     niceDate: function(d)
