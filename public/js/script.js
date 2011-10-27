@@ -4,21 +4,20 @@
 
 var UI = {
     _current: null,
-    switchTo: function(panel) {
+    switchTo: function(newPanel) {
+	var oldPanel = this._current;
+	this._current = newPanel;
 
-	var old = this._current;
-
-	if (old != null) {
-	    $("#"+old).trigger('switchfrom', { newPanel: panel });
-	    $("#"+this._current).fadeOut();
-	    $("#menu-"+this._current).removeClass('selected');
+	if (oldPanel != null) {
+	    $("#"+oldPanel).trigger('switchfrom', { newPanel: newPanel });
+	    $("#"+newPanel).trigger('switchto', { oldPanel: oldPanel });
+	    $("#"+oldPanel).fadeOut('fast', function() {
+		$("#"+newPanel).fadeIn('fast', function() {
+		    $("#menu-"+oldPanel).removeClass('selected');
+		    $("#menu-"+newPanel).addClass('selected');
+		}
+	    });
 	}
-
-	this._current = panel;
-
-	$("#"+this._current).trigger('switchto', { oldPanel: old });
-	$("#"+this._current).fadeIn();
-	$("#menu-"+this._current).addClass('selected');
     },
 
     niceDate: function(d)
