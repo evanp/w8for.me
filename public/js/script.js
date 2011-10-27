@@ -8,7 +8,12 @@ var UI = {
 	var oldPanel = this._current;
 	this._current = newPanel;
 
-	if (oldPanel != null) {
+	if (oldPanel == null) {
+	    $("#"+newPanel).trigger('switchto', { oldPanel: oldPanel });
+	    $("#"+newPanel).fadeIn('fast', function() {
+		$("#menu-"+newPanel).addClass('selected');
+	    });
+	} else {
 	    $("#"+oldPanel).trigger('switchfrom', { newPanel: newPanel });
 	    $("#"+newPanel).trigger('switchto', { oldPanel: oldPanel });
 	    $("#"+oldPanel).fadeOut('fast', function() {
