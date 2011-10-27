@@ -5,13 +5,17 @@
 var UI = {
     _current: null,
     switchTo: function(panel) {
-	if (this._current != null) {
+
+	var old = this._current;
+
+	if (old != null) {
+	    $("#"+old).trigger('switchfrom', { newPanel: panel });
 	    $("#"+this._current).fadeOut();
 	    $("#menu-"+this._current).removeClass('selected');
 	}
-	var old = this._current;
+
 	this._current = panel;
-	$("#"+this._current).trigger('switchfrom', { newPanel: panel });
+
 	$("#"+this._current).trigger('switchto', { oldPanel: old });
 	$("#"+this._current).fadeIn();
 	$("#menu-"+this._current).addClass('selected');
