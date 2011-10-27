@@ -53,55 +53,50 @@ var entryForm = {
 
 var entryStore = {
 
-    pushEntry: function(entry) 
+    get: function(key, def)
     {
-	cnt = this.getCount();
+	var raw = localStorage[key];
 
-	var i = cnt;
-
-	localStorage["entry."+i] = JSON.stringify(entry);
-
-	this.setCount(cnt+1);
+	if (raw == null) {
+	    return def;
+	} else {
+	    return JSON.parse(raw);
+	}
     },
 
-    getEntry: function(i)
+    set: function(key, value)
     {
-	var json = localStorage["entry."+i];
+	localStorage[key] = JSON.stringify(value);
+    },
 
-	if (json == null) {
-	    return null;
-	} else {
-	    return JSON.parse(json);
-	}
+    pushEntry: function(entry) 
+    {
+	this.set("entry."+entry.id, entry);
+	this.set("entry.last", entry.id);
+
+	var indexByTS = this.get("entry.index.by-ts", {});
+
+	// XXX: assumes unique TS
+
+	indexByTS[entry.ts] = entry.id;
+
+	this.set("entry.index.by-ts", indexByTS);
+    },
+
+    getEntry: function(id)
+    {
+	return this.get("entry."+id, null);
     },
 
     getLastEntry: function()
     {
-	var cnt = this.getCount();
-
-	if (cnt == 0) {
+	var id = this.get("entry.last", null);
+	if (id == null) {
 	    return null;
 	} else {
-	    return this.getEntry(cnt - 1);
+	    return this.getEntry(id);
 	}
-    },
-
-    getCount: function()
-    {
-	var rawCnt = localStorage["entry.count"];
-	if (rawCnt == null) {
-	    cnt = 0;
-	    localStorage["entry.count"] = cnt;
-	} else {
-	    cnt = parseInt(rawCnt);
-	}
-	return cnt;
-    },
-
-    setCount: function(cnt)
-    {
-	localStorage["entry.count"] = cnt;
-    },
+    }
 };
 
 $(function() {
