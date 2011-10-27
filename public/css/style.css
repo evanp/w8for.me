@@ -286,6 +286,12 @@ td { vertical-align: top; }
   h2, h3 { page-break-after: avoid; }
 }
 
+.weight-value {
+    font-size: 60px;
+    margin-top: 0.2em; 
+    margin-bottom: 0.2em; 
+}
+
 .num-shim {
     font-size: 0.45em;
     right: 0.4em;
@@ -296,12 +302,6 @@ td { vertical-align: top; }
     -moz-user-select: none;
     -o-user-select: none;
      user-select: none;
-}
-
-.weight-spinner {
-    font-size: 60px;
-    margin-top: 0.2em; 
-    margin-bottom: 0.2em; 
 }
 
 body {
