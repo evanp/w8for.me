@@ -328,5 +328,8 @@ body {
 }
 
 #history-items {
+    text-align: center;
     border-width: 1px;
+    margin-left: auto;
+    margin-right: auto;
 }
