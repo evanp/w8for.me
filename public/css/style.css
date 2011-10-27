@@ -286,7 +286,7 @@ td { vertical-align: top; }
   h2, h3 { page-break-after: avoid; }
 }
 
-.weight-value {
+#weight-value {
     font-size: 60px;
     margin-top: 0.2em; 
     margin-bottom: 0.2em; 
