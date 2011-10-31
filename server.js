@@ -31,15 +31,15 @@ function makeURL(relative) {
     }
 }
 
-server = connect.createServer(
+var server = connect.createServer(
     connect.logger(),
     connect.bodyParser(),
     connect.errorHandler({showMessage: true}),
     connect.query(),
     connect.static(__dirname + '/public'),
     connect.router(function(app) {
-	// Activities
-	app.get('/api/test', notYetImplemented);
+        // Activities
+        app.get('/api/test', notYetImplemented);
     })
 );
 

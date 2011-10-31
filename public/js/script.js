@@ -1,162 +1,159 @@
 /* Author: Evan Prodromou
-
+ * 
  */
 
 var UI = {
     _current: null,
     switchTo: function(newPanel) {
-	var oldPanel = this._current;
-	this._current = newPanel;
+        var oldPanel = this._current;
+        this._current = newPanel;
 
-	if (oldPanel == null) {
-	    $("#"+newPanel).trigger('switchto', { oldPanel: oldPanel });
-	    $("#"+newPanel).fadeIn('fast', function() {
-		$("#menu-"+newPanel).addClass('selected');
-	    });
-	} else {
-	    $("#"+oldPanel).trigger('switchfrom', { newPanel: newPanel });
-	    $("#"+newPanel).trigger('switchto', { oldPanel: oldPanel });
-	    $("#"+oldPanel).fadeOut('fast', function() {
+        if (oldPanel === null) {
+            $("#"+newPanel).trigger('switchto', { oldPanel: oldPanel });
+            $("#"+newPanel).fadeIn('fast', function() {
+                $("#menu-"+newPanel).addClass('selected');
+            });
+        } else {
+            $("#"+oldPanel).trigger('switchfrom', { newPanel: newPanel });
+            $("#"+newPanel).trigger('switchto', { oldPanel: oldPanel });
+            $("#"+oldPanel).fadeOut('fast', function() {
 		$("#"+newPanel).fadeIn('fast', function() {
-		    $("#menu-"+oldPanel).removeClass('selected');
-		    $("#menu-"+newPanel).addClass('selected');
-		});
-	    });
-	}
+                    $("#menu-"+oldPanel).removeClass('selected');
+                    $("#menu-"+newPanel).addClass('selected');
+                });
+            });
+        }
     },
 
-    niceDate: function(d)
-    {
-	now = new Date();
-	
-	if ((now.getYear() != d.getYear()) || (now.getMonth() != d.getMonth()) || (now.getDate() != d.getDate())) {
-	    return d.toLocaleDateString();
-	} else {
-	    return d.toLocaleTimeString();
-	}
+    niceDate: function(d) {
+        now = new Date();
+        
+        if ((now.getYear() != d.getYear()) || (now.getMonth() != d.getMonth()) || (now.getDate() != d.getDate())) {
+            return d.toLocaleDateString();
+        } else {
+            return d.toLocaleTimeString();
+        }
     }
 };
 
 var entryForm = {
 
-    showLastEntryDate: function(ts)
-    {
-	var d = new Date(ts);
-	$('#last-entry-date').html("Last saved: " + UI.niceDate(d));
+    showLastEntryDate: function(ts) {
+        var d = new Date(ts);
+        $('#last-entry-date').html("Last saved: " + UI.niceDate(d));
     },
 
-    showWeight: function(weight)
-    {
-	$('#hundreds').val(Math.floor(weight/100));
-	$('#tens').val(Math.floor((weight%100)/10));
-	$('#ones').val(Math.floor(weight%10));
+    showWeight: function(weight) {
+        $('#hundreds').val(Math.floor(weight/100));
+        $('#tens').val(Math.floor((weight%100)/10));
+        $('#ones').val(Math.floor(weight%10));
     },
 
-    getWeight: function()
-    {
-	var hundreds = parseInt($('#hundreds').val());
-	var tens = parseInt($('#tens').val());
-	var ones = parseInt($('#ones').val());
+    getWeight: function() {
+        var hundreds = parseInt($('#hundreds').val(), 10);
+        var tens = parseInt($('#tens').val(), 10);
+        var ones = parseInt($('#ones').val(), 10);
 
-	return (hundreds*100) + (tens*10) + ones;
+        return (hundreds*100) + (tens*10) + ones;
     }
 };
 
 var entryStore = {
 
-    get: function(key, def)
-    {
-	var raw = localStorage[key];
-
-	if (raw == null) {
-	    return def;
-	} else {
-	    return JSON.parse(raw);
-	}
+    get: function(key, def) {
+        var result = def;
+        var raw = localStorage[key];
+        if (raw !== null) {
+            try {
+                result = JSON.parse(raw);
+            } catch (err) {
+                delete localStorage[key];
+                result = def;
+            }
+        }
+        return result;
     },
 
-    set: function(key, value)
-    {
-	localStorage[key] = JSON.stringify(value);
+    set: function(key, value) {
+        localStorage[key] = JSON.stringify(value);
     },
 
-    pushEntry: function(entry) 
-    {
-	this.set("entry."+entry.id, entry);
-	this.set("entry.last", entry.id);
+    pushEntry: function(entry) {
+        this.set("entry."+entry.id, entry);
+        this.set("entry.last", entry.id);
 
-	var indexByTS = this.get("entry.index.by-ts", {});
+        var indexByTS = this.get("entry.index.by-ts", {});
 
-	// XXX: assumes unique TS
+        // XXX: assumes unique TS
 
-	indexByTS[entry.ts] = entry.id;
+        indexByTS[entry.ts] = entry.id;
 
-	this.set("entry.index.by-ts", indexByTS);
+        this.set("entry.index.by-ts", indexByTS);
     },
 
-    getEntry: function(id)
-    {
-	return this.get("entry."+id, null);
+    getEntry: function(id) {
+        return this.get("entry."+id, null);
     },
 
-    getLastEntry: function()
-    {
-	var id = this.get("entry.last", null);
-	if (id == null) {
-	    return null;
-	} else {
-	    return this.getEntry(id);
-	}
+    getLastEntry: function() {
+        var id = this.get("entry.last", null);
+        if (id === null) {
+            return null;
+        } else {
+            return this.getEntry(id);
+        }
     },
 
     reverseChron: function() {
 
-	var index = this.get("entry.index.by-ts", {});
-	var times = new Array();
-	var ids = new Array();
+        var index = this.get("entry.index.by-ts", {});
+        var times = [];
+        var ids   = [];
+        var ts    = 0;
+        var i     = 0;
 
-	for (var ts in index) {
-	    times.push(parseInt(ts));
-	}
+        for (ts in index) {
+            times.push(parseInt(ts, 10));
+        }
 
-	times.sort(function(a, b) { return b - a; });
+        times.sort(function(a, b) { return b - a; });
 
-	for (var i = 0; i < times.length; i++) {
-	    var ts = times[i];
-	    ids.push(index[ts]);
-	}
+        for (i = 0; i < times.length; i++) {
+            ts = times[i];
+            ids.push(index[ts]);
+        }
 
-	return ids;
+        return ids;
     }
 };
 
 var historyPanel = {
     _init: false,
     initialize: function() {
-	if (this._init) {
-	    return;
-	}
-	var ids = entryStore.reverseChron();
-	for (var i = 0; i < ids.length; i++) {
-	    var id = ids[i];
-	    var entry = entryStore.getEntry(id);
-	    if (entry != null) {
-		this.appendEntry(entry);
-	    }
-	}
-	this._init = true;
+        if (this._init) {
+            return;
+        }
+        var ids = entryStore.reverseChron();
+        for (var i = 0; i < ids.length; i++) {
+            var id = ids[i];
+            var entry = entryStore.getEntry(id);
+            if (entry !== null) {
+                this.appendEntry(entry);
+            }
+        }
+        this._init = true;
     },
 
     appendEntry: function(entry) {
-	$('#history-items tbody').append(this.rowForEntry(entry));
+        $('#history-items tbody').append(this.rowForEntry(entry));
     },
 
     rowForEntry: function(entry) {
-	return $('<tr id="entry-'+entry.id+'"><td>'+UI.niceDate(new Date(entry.ts))+'</td><td>'+entry.weight+'</td></tr>');
+        return $('<tr id="entry-'+entry.id+'"><td>'+UI.niceDate(new Date(entry.ts))+'</td><td>'+entry.weight+'</td></tr>');
     },
 
     prependEntry: function(entry) {
-	$('#history-items tbody').prepend(this.rowForEntry(entry));
+        $('#history-items tbody').prepend(this.rowForEntry(entry));
     }
 };
 
@@ -165,7 +162,7 @@ $(function() {
     // Make sure we have global JSON object
 
     if (!window.JSON) {
-	$.getScript('js/mylibs/json2.js');
+        $.getScript('js/mylibs/json2.js');
     }
 
     $.getScript('js/mylibs/uuid.js');
@@ -174,90 +171,99 @@ $(function() {
 
     if (!Modernizr.inputtypes.number) {
 
-	$('input[type="number"]').each(function(){
-	    var el = $(this),
-	    min = +el.attr('min'),
-	    max = +el.attr('max'),
-	    step = +el.attr('step'),
-	    disabled = el.attr('disabled'),
-	    lock = true, // Locking disables lots of key combinations, like Ctrl+V.
-	    fr = $('<span class="num-shim" style="position: absolute;"><span class="up" style="display: block; cursor: pointer;">&#9650;</span><span class="down" style="display: block; cursor: pointer;">&#9660;</span></span>');
-	    // Don't forget to position .num-shim in CSS.
+        $('input[type="number"]').each(function() {
+            var el = $(this),
+                min = +el.attr('min'),
+                max = +el.attr('max'),
+                step = +el.attr('step'),
+                disabled = el.attr('disabled'),
+                lock = true, // Locking disables lots of key combinations, like Ctrl+V.
+                fr = $('<span class="num-shim" style="position: absolute;">'+
+                       '<span class="up" style="display: block; cursor: pointer;">&#9650;</span>'+
+                       '<span class="down" style="display: block; cursor: pointer;">&#9660;</span></span>');
 
-	    el.wrap('<span style="position: relative; display: inline-block; overflow: hidden;" />');
+            // Don't forget to position .num-shim in CSS.
 
-	    disabled && el.parent().addClass('disabled');
+            el.wrap('<span style="position: relative; display: inline-block; overflow: hidden;" />');
 
-	    el.bind('change', function() {
-		var val = +el.val() || 0;
-		el.val(Math.min(Math.max(min, val), max));
-	    });
+            if (disabled) {
+                el.parent().addClass('disabled');
+            }
 
-	    el.bind('keydown', function(e) {
-		// ↑ ↓ keys
-		if (e.keyCode === 38) {
-		    valUpdate(step);
-		}
-		if (e.keyCode === 40) {
-		    valUpdate(-step);
-		}
+            el.bind('change', function() {
+                var val = +el.val() || 0;
+                el.val(Math.min(Math.max(min, val), max));
+            });
 
-		if (lock) {
-		    // Backspace, enter, escape, delete
-		    if ($.inArray(e.keyCode, [8, 13, 27, 46]) !== -1) return;
+            el.bind('keydown', function(e) {
+                // ↑ ↓ keys
+                if (e.keyCode === 38) {
+                    valUpdate(step);
+                }
+                if (e.keyCode === 40) {
+                    valUpdate(-step);
+                }
 
-		    // Disable input of anything except numbers
-		    if ((e.keyCode < 48 || e.keyCode > 57) && (e.keyCode < 96 || e.keyCode > 105)) {
-			e.preventDefault();
-		    }
-		}
-	    });
+                if (lock) {
+                    // Backspace, enter, escape, delete
+                    if ($.inArray(e.keyCode, [8, 13, 27, 46]) !== -1) return;
 
-	    fr.insertAfter(el)
-		.find('span')
-		.bind('click', function() {
-		    $(this).hasClass('up') ? valUpdate(step) : valUpdate(-step);
-		});
+                    // Disable input of anything except numbers
+                    if ((e.keyCode < 48 || e.keyCode > 57) && (e.keyCode < 96 || e.keyCode > 105)) {
+                        e.preventDefault();
+                    }
+                }
+            });
 
-	    function valUpdate(num) {
-		if (el.attr('disabled')) {
-		    return;
-		}
-		el.val(+el.val() +num).trigger('change');
-	    }
-	});
+            fr.insertAfter(el)
+                .find('span')
+                .bind('click', function() {
+                    if ($(this).hasClass('up')) {
+                        valUpdate(step);
+                    } else { 
+                        valUpdate(-step);
+                    }
+                });
+
+            function valUpdate(num) {
+                if (el.attr('disabled')) {
+                    return;
+                }
+                el.val(+el.val() +num).trigger('change');
+            }
+        });
     }
 
     $('form#weight-entry').submit(function(event) {
 
-	var weight = entryForm.getWeight();
-	// zero-indexed
+        var weight = entryForm.getWeight();
+        // zero-indexed
 
-	var entry = { weight: weight,
-		      ts: new Date().getTime(),
-		      id: uuid() };
+        var entry = { weight: weight,
+                      ts: new Date().getTime(),
+                      id: uuid() };
 
-	entryStore.pushEntry(entry);
+        entryStore.pushEntry(entry);
 
-	historyPanel.prependEntry(entry);
-	entryForm.showLastEntryDate(entry.ts);
+        historyPanel.prependEntry(entry);
+        entryForm.showLastEntryDate(entry.ts);
 
-	// Don't do default processing
+        // Don't do default processing
 
-	return false;
+        return false;
     });
 
     var entry = entryStore.getLastEntry();
 
-    if (entry == null) {
-	entryForm.showWeight(150);
+    if (entry === null) {
+        entryForm.showWeight(150);
     } else {
-	entryForm.showWeight(entry.weight);
-	entryForm.showLastEntryDate(entry.ts);
+        entryForm.showWeight(entry.weight);
+        entryForm.showLastEntryDate(entry.ts);
     } 
 
     $('#history').bind('switchto', function (event, data) {
-	historyPanel.initialize();
+        historyPanel.initialize();
     });
 
     UI.switchTo('entry');
