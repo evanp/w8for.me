@@ -56,12 +56,29 @@
 	</tbody>
       </table>
     </div>
+    <div id="synch">
+      <form id="synch-account">
+	<fieldset id="account">
+	  <input placeholder="Username:" type="text" size="16" maxlength="16" name="username" id="username"></input>
+	  <input placeholder="Password:" type="password" size="16" maxlength="64" name="password" id="password"></input>
+	</fieldset>
+	<input type="submit" value="Synch"></input>
+      </form>
+    </div>
+    <div id="synched">
+      <p id="synched-username"></p>
+      <p id="last-synch"></p>
+      <form id="disconnect-account">
+	<input type="submit" value="Disconnect"></input>
+      </form>
+    </div>
   </div>
   <footer>
     <nav id="switcher">
       <ul>
 	<li><a id="menu-entry" href="javascript:UI.switchTo('entry')">Entry</a></li>
 	<li><a id="menu-history" href="javascript:UI.switchTo('history')">History</a></li>
+	<li><a id="menu-synch" href="javascript:UI.switchToSynch()">Synch</a></li>
       </ul>
     </nav>
   </footer>

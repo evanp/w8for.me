@@ -25,6 +25,16 @@ var UI = {
         }
     },
 
+    switchToSynch: function() {
+        var acct = entryStore.getAccount();
+
+        if (acct === null) {
+            return UI.switchTo('synch');
+        } else {
+            return UI.switchTo('synched');
+        }
+    },
+
     niceDate: function(d) {
         now = new Date();
         
@@ -78,6 +88,10 @@ var entryStore = {
         localStorage[key] = JSON.stringify(value);
     },
 
+    remove: function(key) {
+        delete localStorage[key];
+    },
+
     pushEntry: function(entry) {
         this.set("entry."+entry.id, entry);
         this.set("entry.last", entry.id);
@@ -124,6 +138,22 @@ var entryStore = {
         }
 
         return ids;
+    },
+
+    getAccount: function() {
+        return this.get('account', null);
+    },
+
+    removeAccount: function() {
+        return this.remove('account');
+    },
+
+    setAccount: function(username, password) {
+        return this.set('account', {username: username, password: password});
+    },
+
+    getLastSynch: function() {
+        return this.get('entry.last-synch', null);
     }
 };
 
@@ -253,17 +283,58 @@ $(function() {
         return false;
     });
 
-    var entry = entryStore.getLastEntry();
+    $('form#synch-account').submit(function(event) {
 
-    if (entry === null) {
-        entryForm.showWeight(150);
-    } else {
-        entryForm.showWeight(entry.weight);
-        entryForm.showLastEntryDate(entry.ts);
-    } 
+        var username = $('#username').val();
+        var password = $('#password').val();
+
+        if (!username || !password) {
+            
+        }
+
+        entryStore.setAccount(username, password);
+
+        switchTo('synched');
+
+        // Don't do default processing
+
+        return false;
+    });
+
+    $('form#disconnect-account').submit(function(event) {
+
+        entryStore.removeAccount();
+
+        switchTo('synch');
+
+        return false;
+    });
+
+    $('#synched').bind('switchto', function (event, data) {
+        var acct = entryStore.getAccount();
+        var lastSynch = entryStore.getLastSynch();
+        var lastSynchText = (lastSynch === null) ? '' : UI.niceDate(lastSynch);
+
+        if (acct !== null) {
+            $('#synched-username').html(acct.username);
+        }
+
+        $('#last-synch').html(lastSynchText);
+    });
 
     $('#history').bind('switchto', function (event, data) {
         historyPanel.initialize();
+    });
+
+    $('#entry').bind('switchto', function (event, data) {
+        var entry = entryStore.getLastEntry();
+
+        if (entry === null) {
+            entryForm.showWeight(150);
+        } else {
+            entryForm.showWeight(entry.weight);
+            entryForm.showLastEntryDate(entry.ts);
+        } 
     });
 
     UI.switchTo('entry');

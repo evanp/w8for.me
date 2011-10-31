@@ -316,6 +316,14 @@ body {
     display: none;
 }
 
+#synch {
+    display: none;
+}
+
+#synched {
+    display: none;
+}
+
 #switcher ul li {
     display: inline;
     list-style-type: none;
