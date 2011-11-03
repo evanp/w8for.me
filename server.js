@@ -1,6 +1,6 @@
 // server.js
 //
-// basic server for web apps
+// w8for.me
 //
 // Copyright 2011, StatusNet Inc.
 //
@@ -17,19 +17,61 @@
 // limitations under the License.
 
 var connect = require('connect');
+var mongodb = require('mongodb');
+
+var Db = mongodb.Db,
+    Connection = mongodb.Connection,
+    Server = mongodb.Server;
+
+var returnJSON = function(res, code, payload) {
+    res.writeHead(code, {'Content-Type': 'application/json'});
+    res.end(JSON.stringify(payload));
+}
 
 function notYetImplemented(req, res, next) {
-    res.writeHead(500, {'Content-Type': 'application/json'});
-    res.end("\"Not yet implemented\"\n");
+    returnJSON(res, 500, "Not yet implemented");
 }
 
-function makeURL(relative) {
-    if (port != 80) {
-	return 'http://'+hostname+':'+port+'/'+relative;
-    } else {
-	return 'http://'+hostname+'/'+relative;
-    }
-}
+var login = function(req, res, next) {
+    var account = req.body;
+
+    accounts.findOne({username: account.username}, function(acct) {
+        if (acct === undefined) {
+            returnJSON(res, 404, "No such user.");
+        } else {
+            if (acct.password === account.password) {
+                returnJSON(res, 200, acct.username);
+            } else {
+                returnJSON(res, 403, "Wrong password");
+            }
+        }
+    });
+};
+
+var register = function(req, res, next) {
+
+    var account = req.body;
+
+    console.log("Registering new user: " + JSON.stringify(account));
+
+    accounts.findOne({username: account.username}, function(err, acct) {
+        if (err) {
+            returnJSON(res, 500, err.message);
+        } else if (acct !== null) {
+            returnJSON(res, 409, "Conflict");
+        } else {
+            // FIXME: bcrypt the password
+            accounts.save(account, function(err) {
+                console.log(err);
+                if (err) { 
+                    returnJSON(res, 500, err.message);
+                } else {
+                    returnJSON(res, 200, account.username);
+                }
+            });
+        }
+    });
+};
 
 var server = connect.createServer(
     connect.logger(),
@@ -39,11 +81,28 @@ var server = connect.createServer(
     connect.static(__dirname + '/public'),
     connect.router(function(app) {
         // Activities
-        app.get('/api/test', notYetImplemented);
+        app.post('/api/login', login);
+        app.post('/api/register', register);
     })
 );
 
-var port     = process.env.PORT || 8001;
-var hostname = process.env.HOSTNAME || 'localhost';
+var webport = process.env.PORT || 8001;
+var webhost = process.env.HOSTNAME || 'localhost';
 
-server.listen(port);
+var dbhost = process.env['MONGO_NODE_DRIVER_HOST'] != null ? process.env['MONGO_NODE_DRIVER_HOST'] : 'localhost';
+var dbport = process.env['MONGO_NODE_DRIVER_PORT'] != null ? process.env['MONGO_NODE_DRIVER_PORT'] : Connection.DEFAULT_PORT;
+
+var client = new Db('w8forme', new Server(dbhost, dbport, {}));
+
+var accounts = null;
+
+client.open(function(err, db) {
+    if (err) {
+        console.log("Error: " + err);
+    } else {
+        db.collection('accounts', function(err, collection) {
+            accounts = collection;
+            server.listen(webport);
+        });
+    }
+});

@@ -229,9 +229,23 @@ $(function() {
             
         }
 
-        entryStore.setAccount(username, password);
+        $('p#synch-status').html("Synching...");
 
-        UI.switchTo('synched');
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+	    contentType: 'application/json',
+            url: '/api/register',
+            data: JSON.stringify({username: username, password: password}),
+            error: function (xhr, textStatus, errorThrown) {
+                $('p#synch-status').html(errorThrown);
+            },
+            success: function(data, textStatus) {
+                entryStore.setAccount(username, password);
+                $('p#synch-status').html("Synched");
+                UI.switchTo('synched');
+            }
+        });
     });
 
     $('form#disconnect-account').submit(function(event) {
@@ -243,6 +257,10 @@ $(function() {
 
         UI.switchTo('synch');
 
+    });
+
+    $('#synch').bind('switchfrom', function (event, data) {
+        $('p#synch-status').html("");
     });
 
     $('#synched').bind('switchto', function (event, data) {
