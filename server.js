@@ -35,15 +35,15 @@ function notYetImplemented(req, res, next) {
 var login = function(req, res, next) {
     var account = req.body;
 
-    accounts.findOne({username: account.username}, function(acct) {
-        if (acct === undefined) {
+    accounts.findOne({username: account.username}, function(err, acct) {
+        if (err) {
+            returnJSON(res, 500, err.message);
+        } else if (acct === null) {
             returnJSON(res, 404, "No such user.");
+        } else if (acct.password !== account.password) {
+            returnJSON(res, 403, "Wrong password");
         } else {
-            if (acct.password === account.password) {
-                returnJSON(res, 200, acct.username);
-            } else {
-                returnJSON(res, 403, "Wrong password");
-            }
+            returnJSON(res, 200, acct.username);
         }
     });
 };
