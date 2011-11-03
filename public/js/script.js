@@ -238,7 +238,25 @@ $(function() {
             url: '/api/register',
             data: JSON.stringify({username: username, password: password}),
             error: function (xhr, textStatus, errorThrown) {
-                $('p#synch-status').html(errorThrown);
+                if (xhr.status == 409) { // exists already; try and login
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+	                contentType: 'application/json',
+                        url: '/api/login',
+                        data: JSON.stringify({username: username, password: password}),
+                        error: function (xhr, textStatus, errorThrown) {
+                            $('p#synch-status').html(errorThrown);
+                        },
+                        success: function(data, textStatus) {
+                            entryStore.setAccount(username, password);
+                            $('p#synch-status').html("Synched");
+                            UI.switchTo('synched');
+                        }
+                    });
+                } else {
+                    $('p#synch-status').html(errorThrown);
+                }
             },
             success: function(data, textStatus) {
                 entryStore.setAccount(username, password);
