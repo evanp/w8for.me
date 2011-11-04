@@ -89,8 +89,8 @@ var server = connect.createServer(
 var webport = process.env.PORT || 8001;
 var webhost = process.env.HOSTNAME || 'localhost';
 
-var dbhost = process.env['MONGO_NODE_DRIVER_HOST'] != null ? process.env['MONGO_NODE_DRIVER_HOST'] : 'localhost';
-var dbport = process.env['MONGO_NODE_DRIVER_PORT'] != null ? process.env['MONGO_NODE_DRIVER_PORT'] : Connection.DEFAULT_PORT;
+var dbhost = process.env.MONGO_NODE_DRIVER_HOST || 'localhost';
+var dbport = process.env.MONGO_NODE_DRIVER_PORT || Connection.DEFAULT_PORT;
 
 var client = new Db('w8forme', new Server(dbhost, dbport, {}));
 
