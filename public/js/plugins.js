@@ -18,14 +18,6 @@ window.log = function(){
 
 $(function() {
 
-    // Make sure we have global JSON object
-
-    if (!window.JSON) {
-        $.getScript('js/mylibs/json2.js');
-    }
-
-    $.getScript('js/mylibs/uuid.js');
-
     // Shim for 'number' types
 
     if (!Modernizr.inputtypes.number) {
