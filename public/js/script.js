@@ -189,14 +189,6 @@ var historyPanel = {
 
 $(function() {
 
-    // Make sure we have global JSON object
-
-    if (!window.JSON) {
-        $.getScript('js/mylibs/json2.js');
-    }
-
-    $.getScript('js/mylibs/uuid.js');
-
     $('form#weight-entry').submit(function(event) {
 
         // Don't do default processing
